@@ -625,14 +625,18 @@
         }
 
         // 画像ロード監視（data URI 等で既にロード完了済みのブラウザでも確実にカウント）
-        ['img-bear', 'img-bachi', 'img-dog', 'img-tanuki', 'img-black'].forEach(id => {
-            const img = document.getElementById(id);
-            if (img.complete) {
-                checkAssetsLoaded();
-            } else {
-                img.onload = checkAssetsLoaded;
-                img.onerror = checkAssetsLoaded;
-            }
+        // ※スクリプト解析完了後(DOMContentLoaded)に登録する。解析中に initGame が走ると
+        //   後方で宣言される let 変数の TDZ エラーになるため。
+        window.addEventListener('DOMContentLoaded', () => {
+            ['img-bear', 'img-bachi', 'img-dog', 'img-tanuki', 'img-black'].forEach(id => {
+                const img = document.getElementById(id);
+                if (img.complete) {
+                    checkAssetsLoaded();
+                } else {
+                    img.onload = checkAssetsLoaded;
+                    img.onerror = checkAssetsLoaded;
+                }
+            });
         });
 
         // 念のための保険（万一カウントが揃わなくても起動させる）
